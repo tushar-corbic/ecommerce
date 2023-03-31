@@ -1,5 +1,7 @@
 const Product = require("../models/productModel")
 
+
+// get all product
 exports.getAllProducts = async (req,res) =>{
     const products = await Product.find({})
     res.status(200).json({
@@ -8,6 +10,23 @@ exports.getAllProducts = async (req,res) =>{
     })
 }
 
+
+// get product details
+exports.getProductDetail = async (req, res, next)=>{
+    const product = await Product.findById(req.body.id);
+
+    if(!product){
+        return res.status(500).json({
+            success:false,
+            message :"Product not found",
+        })
+    }
+    
+    return res.status(200).json({
+        success:true,
+        product,
+    })
+}
 
 // create product --admin
 exports.createProduct = async (req, res, next) =>{
@@ -28,7 +47,7 @@ exports.updateProduct = async(req, res, next) =>{
             message : "Product not found",
         })
     }
-    
+
     product = await Product.findByIdAndUpdate(req.body.id, req.body,{
         new :true,
         runValidators :true,
@@ -40,4 +59,22 @@ exports.updateProduct = async(req, res, next) =>{
         product
     })
 
+}
+
+// delete product --admin
+exports.deleteProduct = async (req, res, next) => {
+    let product = await Product.findById(req.body.id);
+
+    if(!product){
+        return res.status(500).json({
+            success:false,
+            message :"Product not found",
+        })
+    }
+
+    product = await Product.findByIdAndDelete(req.body.id);
+    return res.status(200).json({
+        success: true,
+        message: "Product deleted",
+    })
 }
